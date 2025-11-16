@@ -1,98 +1,164 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React from 'react';
+import { 
+  StyleSheet, 
+  Text, 
+  View, 
+  Image, 
+  SafeAreaView, 
+  ScrollView 
+} from 'react-native';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+// --- DADOS DO CURRÍCULO ---
+const curriculoData = {
+  nome: "Allan Lemos Falcão", // nome
+  fotoUrl: "https://i.imgur.com/TvTqLff.png", // Link foto 
+  titulo: "Desenvolvedor de Software", // Seu título/cargo
+  experiencias: [
+    {
+      cargo: "Estagiário Técnico em Edificações",
+      empresa: "Sinduscon - Sindicato da Industria da Construção Civil",
+      periodo: "2018 - 2019",
+      descricao: "Uso de ferramentas voltadas a confecção de Orçamento; Fiscalização de execução de serviços em obra"
+    }
+  ]
+};
+// ------------------------------
 
-export default function HomeScreen() {
+/**
+ * Componente para renderizar um item de experiência
+ */
+function ExperienceItem({ cargo, empresa, periodo, descricao }) {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
-
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <View style={styles.experienceItem}>
+      <Text style={styles.expCargo}>{cargo}</Text>
+      <Text style={styles.expEmpresa}>{empresa}</Text>
+      <Text style={styles.expPeriodo}>{periodo}</Text>
+      <Text style={styles.expDescricao}>{descricao}</Text>
+    </View>
   );
 }
 
+/**
+ * Componente principal do App
+ */
+export default function App() {
+  const { nome, fotoUrl, titulo, experiencias } = curriculoData;
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView>
+        <View style={styles.container}>
+          
+          {/* --- Header com Foto e Nome --- */}
+          <View style={styles.header}>
+            <Image
+              source={{ uri: fotoUrl }}
+              style={styles.foto}
+              // Fallback não é tão direto, mas 'uri' é o caminho
+            />
+            <Text style={styles.nome}>{nome}</Text>
+            <Text style={styles.titulo}>{titulo}</Text>
+          </View>
+
+          {/* --- Seção de Experiência --- */}
+          <View style={styles.mainContent}>
+            <Text style={styles.sectionTitle}>
+              Experiência Profissional
+            </Text>
+            
+            {/* Mapeia o array de experiências e renderiza cada item */}
+            {experiencias.map((exp, index) => (
+              <ExperienceItem
+                key={index}
+                cargo={exp.cargo}
+                empresa={exp.empresa}
+                periodo={exp.periodo}
+                descricao={exp.descricao}
+              />
+            ))}
+          </View>
+
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+/**
+ * Componente de Estilos
+ */
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#f0f4f8', // Um fundo cinza claro para o app
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  container: {
+    flex: 1,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  header: {
+    backgroundColor: '#0369a1', // Azul (sky-800)
+    paddingVertical: 32, // p-8
+    paddingHorizontal: 16,
+    alignItems: 'center', // Centraliza itens
+  },
+  foto: {
+    width: 128, // w-32
+    height: 128, // h-32
+    borderRadius: 64, // rounded-full
+    borderWidth: 4,
+    borderColor: '#ffffff', // border-white
+  },
+  nome: {
+    fontSize: 28, // text-3xl
+    fontWeight: 'bold',
+    color: '#ffffff', // text-white
+    marginTop: 16, // mt-4
+  },
+  titulo: {
+    fontSize: 18, // text-lg
+    color: '#bae6fd', // text-sky-200
+  },
+  mainContent: {
+    padding: 24, // p-6
+  },
+  sectionTitle: {
+    fontSize: 22, // text-2xl
+    fontWeight: '600', // font-semibold
+    color: '#1e293b', // text-gray-800
+    marginBottom: 20, // mb-5
+    borderBottomWidth: 2,
+    borderBottomColor: '#e0f2fe', // border-sky-100
+    paddingBottom: 8, // pb-2
+  },
+  // Estilos para o ExperienceItem
+  experienceItem: {
+    marginBottom: 20, // mb-5
+    padding: 16, // p-4
+    borderRadius: 8, // rounded-lg
+    borderWidth: 1,
+    borderColor: '#e5e7eb', // border-gray-200
+    backgroundColor: '#ffffff', // Fundo branco para o card
+  },
+  expCargo: {
+    fontSize: 20, // text-xl
+    fontWeight: 'bold',
+    color: '#075985', // text-sky-700
+  },
+  expEmpresa: {
+    fontSize: 16, // text-md
+    fontWeight: '600', // font-semibold
+    color: '#374151', // text-gray-700
+    marginTop: 4,
+  },
+  expPeriodo: {
+    fontSize: 14, // text-sm
+    color: '#6b7280', // text-gray-500
+    marginBottom: 8, // mb-2
+    marginTop: 4,
+  },
+  expDescricao: {
+    fontSize: 16, // text-base
+    color: '#4b5563', // text-gray-600
+    textAlign: 'justify', // text-justify
   },
 });
